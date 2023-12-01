@@ -1,0 +1,51 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <chrono>
+#include <format>
+#include <set>
+
+using namespace std;
+
+int main()
+{
+	string input;
+	auto readStream = ifstream("../input.txt");
+	if (readStream.is_open())
+	{
+		string line;
+		while (getline(readStream, line))
+		{
+			input += line;
+			input.push_back('\n');
+		}
+	}
+
+	const auto execStart = chrono::high_resolution_clock::now();
+
+	/* begin solution */
+
+	auto answer = 0;
+	set<int> visitedFrequencies;
+	auto found = false;
+	string line;
+	auto parseStream = stringstream(input);
+	while (!found)
+	{
+		while (!found && getline(parseStream, line))
+		{
+			answer += stoi(line);
+			auto const [_, isNew] = visitedFrequencies.insert(answer);
+			found = !isNew;
+		}
+
+		parseStream.clear();
+		parseStream.seekg(0);
+	}
+
+	/* end solution */
+
+	const auto execEnd = chrono::high_resolution_clock::now();
+	const auto micros = chrono::duration_cast<chrono::milliseconds>(execEnd - execStart);
+	cout << std::format("{} ({})", answer, micros);
+}
